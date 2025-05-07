@@ -1,19 +1,62 @@
 
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { properties } from "@/data/properties";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Share, ArrowLeft, CheckCircle, MapPin, Bed, Bath, Home } from "lucide-react";
+import { 
+  Heart, 
+  Share, 
+  ArrowLeft, 
+  CheckCircle, 
+  MapPin, 
+  Bed, 
+  Bath, 
+  Home,
+  ChevronLeft,
+  ChevronRight,
+  Phone,
+  Mail,
+  Calendar 
+} from "lucide-react";
 import { toast } from "sonner";
+import { ImageCarousel } from "@/components/ImageCarousel";
+import PropertyContactForm from "@/components/PropertyContactForm";
+import PropertyMap from "@/components/PropertyMap";
+import SimilarProperties from "@/components/SimilarProperties";
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const property = properties.find(p => p.id === id);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container px-4 py-16 flex items-center justify-center">
+          <div className="animate-pulse space-y-8 w-full">
+            <div className="h-64 w-full bg-muted rounded-xl"></div>
+            <div className="h-8 w-2/3 bg-muted rounded-lg"></div>
+            <div className="h-4 w-1/3 bg-muted rounded-lg"></div>
+            <div className="h-40 w-full bg-muted rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -31,9 +74,25 @@ const PropertyDetail = () => {
   };
 
   const handleShare = () => {
-    // In a real app, this would open a share dialog
-    toast.success("Share dialog opened");
+    if (navigator.share) {
+      navigator.share({
+        title: property.title,
+        text: `Check out this property: ${property.title}`,
+        url: window.location.href,
+      })
+      .then(() => toast.success("Shared successfully"))
+      .catch(() => toast.error("Error sharing"));
+    } else {
+      // Fallback for browsers that don't support the Web Share API
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => toast.success("Link copied to clipboard"))
+        .catch(() => toast.error("Failed to copy link"));
+    }
   };
+
+  const similarProperties = properties
+    .filter(p => p.id !== id && p.beds === property.beds)
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background">
@@ -52,30 +111,8 @@ const PropertyDetail = () => {
         
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-2/3">
-            <div className="relative">
-              <div className="rounded-xl overflow-hidden aspect-video mb-4">
-                <img 
-                  src={property.images[activeImageIndex]} 
-                  alt={property.title} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              
-              <div className="flex space-x-2 overflow-x-auto pb-2">
-                {property.images.map((img, index) => (
-                  <div 
-                    key={index} 
-                    className={`flex-shrink-0 h-20 w-32 rounded-lg overflow-hidden cursor-pointer border-2 ${activeImageIndex === index ? 'border-airbenbe-primary' : 'border-transparent'}`}
-                    onClick={() => setActiveImageIndex(index)}
-                  >
-                    <img 
-                      src={img} 
-                      alt={`Photo ${index + 1}`} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
+            <div className="relative mb-6">
+              <ImageCarousel images={property.images} title={property.title} />
               
               <div className="absolute top-4 right-4 flex space-x-2">
                 <Button 
@@ -99,7 +136,7 @@ const PropertyDetail = () => {
               </div>
             </div>
             
-            <div className="mt-6">
+            <div>
               <div className="flex flex-wrap justify-between items-start">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">{property.title}</h1>
@@ -136,9 +173,10 @@ const PropertyDetail = () => {
               </div>
               
               <Tabs defaultValue="details">
-                <TabsList className="grid grid-cols-3 mb-6">
+                <TabsList className="grid grid-cols-4 mb-6">
                   <TabsTrigger value="details">Details</TabsTrigger>
                   <TabsTrigger value="features">Features</TabsTrigger>
+                  <TabsTrigger value="map">Location</TabsTrigger>
                   <TabsTrigger value="ai-analysis">AI Analysis</TabsTrigger>
                 </TabsList>
                 
@@ -161,6 +199,13 @@ const PropertyDetail = () => {
                   </div>
                 </TabsContent>
                 
+                <TabsContent value="map">
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-medium">Property Location</h3>
+                    <PropertyMap location={property.location} />
+                  </div>
+                </TabsContent>
+                
                 <TabsContent value="ai-analysis">
                   <div className="space-y-6">
                     <div className="bg-muted/50 p-6 rounded-lg">
@@ -170,7 +215,7 @@ const PropertyDetail = () => {
                       </p>
                       
                       <div className="mt-4 space-y-4">
-                        <div className="bg-white p-4 rounded-md">
+                        <div className="bg-white p-4 rounded-md shadow-sm">
                           <h4 className="font-medium mb-2">Market Comparison</h4>
                           <p className="text-sm text-muted-foreground">
                             This property is priced approximately 5% below similar properties in the area,
@@ -178,7 +223,7 @@ const PropertyDetail = () => {
                           </p>
                         </div>
                         
-                        <div className="bg-white p-4 rounded-md">
+                        <div className="bg-white p-4 rounded-md shadow-sm">
                           <h4 className="font-medium mb-2">Property Analysis</h4>
                           <p className="text-sm text-muted-foreground">
                             Our image recognition detected high-end finishes and recent renovations,
@@ -186,7 +231,7 @@ const PropertyDetail = () => {
                           </p>
                         </div>
                         
-                        <div className="bg-white p-4 rounded-md">
+                        <div className="bg-white p-4 rounded-md shadow-sm">
                           <h4 className="font-medium mb-2">Neighborhood Trends</h4>
                           <p className="text-sm text-muted-foreground">
                             This area has seen a 7% increase in property values over the past year,
@@ -199,59 +244,52 @@ const PropertyDetail = () => {
                 </TabsContent>
               </Tabs>
             </div>
+            
+            <div className="mt-12">
+              <h3 className="text-2xl font-bold mb-6">Similar Properties</h3>
+              <SimilarProperties properties={similarProperties} />
+            </div>
           </div>
           
           <div className="lg:w-1/3">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-6">
               <div className="border rounded-xl p-6 shadow-sm">
-                <h3 className="text-lg font-medium mb-4">Schedule a Viewing</h3>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button variant="outline" className="justify-start">Today</Button>
-                    <Button variant="outline" className="justify-start">Tomorrow</Button>
-                    <Button variant="outline" className="justify-start">Thursday</Button>
-                    <Button variant="outline" className="justify-start">Friday</Button>
+                <h3 className="text-lg font-bold mb-4">Schedule a Viewing</h3>
+                <PropertyContactForm propertyId={property.id} propertyTitle={property.title} />
+              </div>
+              
+              <div className="border rounded-xl p-6 shadow-sm">
+                <h3 className="text-lg font-bold mb-4">Contact Agent</h3>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80" 
+                      alt="Agent"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  
-                  <div className="pt-4 border-t">
-                    <h4 className="text-sm font-medium mb-2">Contact Information</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Fill in your details and we'll connect you with the property agent.
-                    </p>
-                    <div className="space-y-3">
-                      <input
-                        type="text"
-                        placeholder="Full Name"
-                        className="w-full px-4 py-2 rounded-md border"
-                      />
-                      <input
-                        type="email"
-                        placeholder="Email Address"
-                        className="w-full px-4 py-2 rounded-md border"
-                      />
-                      <input
-                        type="tel"
-                        placeholder="Phone Number"
-                        className="w-full px-4 py-2 rounded-md border"
-                      />
-                      <textarea
-                        placeholder="Message (Optional)"
-                        rows={3}
-                        className="w-full px-4 py-2 rounded-md border"
-                      ></textarea>
-                    </div>
+                  <div>
+                    <h4 className="font-medium">Michael Anderson</h4>
+                    <p className="text-sm text-muted-foreground">Senior Property Consultant</p>
                   </div>
-                  
+                </div>
+                <div className="space-y-3">
                   <Button 
-                    className="w-full bg-airbenbe-primary hover:bg-airbenbe-primary/90"
-                    onClick={() => toast.success("Viewing request sent!")}
+                    variant="outline" 
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => toast.success("Call button clicked")}
                   >
-                    Request Viewing
+                    <Phone className="h-4 w-4" />
+                    Call Agent
                   </Button>
-                  
-                  <p className="text-xs text-center text-muted-foreground">
-                    By submitting this form, you agree to our privacy policy and terms of service.
-                  </p>
+                  <Button 
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => toast.success("Email button clicked")}
+                  >
+                    <Mail className="h-4 w-4" />
+                    Email Agent
+                  </Button>
                 </div>
               </div>
             </div>
