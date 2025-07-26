@@ -2,6 +2,36 @@
 
 A modern, AI-powered real estate platform built with React, TypeScript, and advanced UI components. This application provides a comprehensive property browsing experience with intelligent search, filtering, and user management features specifically designed for the Libyan real estate market.
 
+## 📸 Screenshots
+
+### Login
+![Login](./screenshots/login.png)
+*User authentication page for secure access*
+
+### Signup
+![Signup](./screenshots/signup.png)
+*New user registration page for account creation*
+
+### Homepage
+![Homepage](./screenshots/homepage.png)
+*Modern landing page with featured properties across Libyan cities*
+
+### Property Listings
+![Property Listings](./screenshots/property-listings.png)
+*Advanced filtering and search capabilities for Libyan real estate market*
+
+### Property Details
+![Property Details](./screenshots/property-details.png)
+*Detailed property view with image gallery, map, and contact form in Arabic/English*
+
+### Saved Properties
+![Saved Properties](./screenshots/saved-properties.png)
+*User dashboard for managing saved properties with LYD pricing*
+
+### Mobile Responsive
+![Mobile View](./screenshots/mobile-view.png)
+*Fully responsive design optimized for mobile devices with RTL support*
+
 ## 🌟 Features
 
 - **🏠 Property Listings**: Browse through curated property listings across major Libyan cities (Tripoli, Benghazi, Misrata)
@@ -83,6 +113,14 @@ npm run db:seed      # Seed database with sample data
 ```
 
 ## 📸 Screenshots
+
+### Login
+![Login](./screenshots/login.png)
+*User authentication page for secure access*
+
+### Signup
+![Signup](./screenshots/signup.png)
+*New user registration page for account creation*
 
 ### Homepage
 ![Homepage](./screenshots/homepage.png)
