@@ -18,34 +18,34 @@ export interface Property {
 export const properties: Property[] = [
   {
     id: "prop-1",
-    title: "Luxury Waterfront Villa",
-    description: "Experience unparalleled luxury in this stunning waterfront villa with panoramic ocean views. This beautiful modern home features floor-to-ceiling windows, custom Italian furniture, and a private infinity pool overlooking the ocean. The gourmet kitchen includes top-of-the-line appliances and marble countertops. The primary suite offers a spa-like bathroom and private balcony.",
-    location: "Miami Beach, FL",
-    price: 3250000,
+    title: "Luxury Villa in Hay Al-Andalus",
+    description: "Experience unparalleled luxury in this stunning villa located in the prestigious Hay Al-Andalus district of Tripoli. This beautiful modern home features floor-to-ceiling windows, marble finishes, and a private garden with Mediterranean landscaping. The gourmet kitchen includes premium appliances and granite countertops. The master suite offers panoramic city views.",
+    location: "Hay Al-Andalus, Tripoli",
+    price: 450000,
     images: [
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format&fit=crop&q=60",
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&auto=format&fit=crop&q=60",
       "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&auto=format&fit=crop&q=60"
     ],
     beds: 5,
-    baths: 4.5,
+    baths: 4,
     sqft: 4200,
-    features: ["Waterfront", "Pool", "Smart Home", "Wine Cellar", "Home Theater"],
+    features: ["Garden", "Pool", "Security", "Parking", "Central AC"],
     isFeatured: true,
     createdAt: "2025-01-15T10:30:00Z"
   },
   {
     id: "prop-2",
-    title: "Modern Urban Condo",
-    description: "Sleek and sophisticated urban living in the heart of downtown. This designer condo features an open concept layout, high ceilings, and premium finishes throughout. The chef's kitchen is equipped with stainless steel appliances and quartz countertops. Building amenities include a rooftop pool, fitness center, and 24-hour concierge service.",
-    location: "Downtown Los Angeles, CA",
-    price: 785000,
+    title: "Modern Apartment in Downtown Benghazi",
+    description: "Sleek and sophisticated urban living in the heart of downtown Benghazi. This designer apartment features an open concept layout, high ceilings, and premium finishes throughout. The modern kitchen is equipped with stainless steel appliances and granite countertops. Building amenities include elevator access and 24-hour security.",
+    location: "Downtown Benghazi, Benghazi",
+    price: 180000,
     images: [
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&auto=format&fit=crop&q=60",
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop&q=60",
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&auto=format&fit=crop&q=60"
     ],
-    beds: 2,
+    beds: 3,
     baths: 2,
     sqft: 1200,
     features: ["Concierge", "Gym", "Rooftop Deck", "Pet Friendly", "City Views"],

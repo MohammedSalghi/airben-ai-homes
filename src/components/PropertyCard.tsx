@@ -1,8 +1,9 @@
 
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export interface PropertyCardProps {
   id: string;
@@ -32,13 +33,46 @@ const PropertyCard = ({
   const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
   
+  useEffect(() => {
+    // Check if property is already saved
+    const savedProperties = JSON.parse(localStorage.getItem("savedProperties") || "[]");
+    setIsFavorite(savedProperties.some((p: any) => p.id === id));
+  }, [id]);
+  
   const handleCardClick = () => {
     navigate(`/property/${id}`);
   };
   
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
+    
+    const savedProperties = JSON.parse(localStorage.getItem("savedProperties") || "[]");
+    
+    if (isFavorite) {
+      // Remove from saved
+      const updated = savedProperties.filter((p: any) => p.id !== id);
+      localStorage.setItem("savedProperties", JSON.stringify(updated));
+      setIsFavorite(false);
+      toast.success("Removed from saved properties");
+    } else {
+      // Add to saved
+      const propertyData = {
+        id,
+        title,
+        price: `$${price.toLocaleString()}`,
+        location,
+        bedrooms: beds,
+        bathrooms: baths,
+        sqft,
+        image: images[0],
+        savedAt: new Date().toISOString(),
+        viewCount: 1
+      };
+      savedProperties.push(propertyData);
+      localStorage.setItem("savedProperties", JSON.stringify(savedProperties));
+      setIsFavorite(true);
+      toast.success("Added to saved properties");
+    }
   };
 
   return (

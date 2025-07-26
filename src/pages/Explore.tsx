@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
 import PropertyFilters from "@/components/PropertyFilters";
@@ -8,18 +9,63 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
 const Explore = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const [visibleCount, setVisibleCount] = useState(8);
+  const [filters, setFilters] = useState({
+    propertyType: "all",
+    priceRange: "any",
+    bedrooms: "any"
+  });
+
+  useEffect(() => {
+    const searchFromUrl = searchParams.get("search");
+    if (searchFromUrl) {
+      setSearchQuery(searchFromUrl);
+    }
+  }, [searchParams]);
   
-  const filteredProperties = properties.filter(property => 
-    property.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    property.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const applyFilters = (property: any) => {
+    // Apply search filter
+    const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         property.location.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (!matchesSearch) return false;
+    
+    // Apply property type filter
+    if (filters.propertyType !== "all") {
+      // This is a simplified version - in a real app, you'd have property type data
+      const typeMatch = property.title.toLowerCase().includes(filters.propertyType);
+      if (!typeMatch) return false;
+    }
+    
+    // Apply price range filter
+    if (filters.priceRange !== "any") {
+      const [min, max] = filters.priceRange.split("-").map(Number);
+      if (property.price < min || (max && property.price > max)) {
+        return false;
+      }
+    }
+    
+    // Apply bedroom filter
+    if (filters.bedrooms !== "any") {
+      const minBeds = parseInt(filters.bedrooms);
+      if (property.beds < minBeds) return false;
+    }
+    
+    return true;
+  };
   
+  const filteredProperties = properties.filter(applyFilters);
   const visibleProperties = filteredProperties.slice(0, visibleCount);
   
   const loadMore = () => {
     setVisibleCount(prev => Math.min(prev + 4, filteredProperties.length));
+  };
+
+  const handleFiltersChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    setVisibleCount(8); // Reset visible count when filters change
   };
 
   return (
@@ -40,7 +86,7 @@ const Explore = () => {
             />
           </div>
           
-          <PropertyFilters />
+          <PropertyFilters onFiltersChange={handleFiltersChange} />
           
           {visibleProperties.length > 0 ? (
             <>

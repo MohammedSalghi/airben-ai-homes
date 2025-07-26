@@ -34,13 +34,34 @@ const PropertyDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Simulate data loading
+    // Simulate data loading and track views
     const timer = setTimeout(() => {
       setIsLoading(false);
+      
+      // Track property view
+      if (property) {
+        const views = JSON.parse(localStorage.getItem("propertyViews") || "[]");
+        const viewData = {
+          propertyId: id,
+          viewedAt: new Date().toISOString(),
+          propertyTitle: property.title
+        };
+        views.push(viewData);
+        localStorage.setItem("propertyViews", JSON.stringify(views));
+        
+        // Update saved properties view count if it exists
+        const savedProperties = JSON.parse(localStorage.getItem("savedProperties") || "[]");
+        const updatedSaved = savedProperties.map((saved: any) => 
+          saved.id === id 
+            ? { ...saved, viewCount: (saved.viewCount || 0) + 1 }
+            : saved
+        );
+        localStorage.setItem("savedProperties", JSON.stringify(updatedSaved));
+      }
     }, 500);
     
     return () => clearTimeout(timer);
-  }, [id]);
+  }, [id, property]);
 
   if (isLoading) {
     return (

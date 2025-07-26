@@ -23,23 +23,23 @@ const Auth = () => {
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="text-white max-w-md">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">
-              airben<span className="text-white">be</span>
+              Libya<span className="text-white">RE</span>
             </h1>
             <p className="text-xl mb-8">
-              AI-powered property discovery tailored just for you
+              Modern real estate platform for Libya
             </p>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 mt-0.5">✓</div>
-                <span>Advanced property search with AI-generated insights</span>
+                <span>Advanced property search across Libyan cities</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 mt-0.5">✓</div>
-                <span>Automatic property details extraction from images</span>
+                <span>Properties in Tripoli, Benghazi, Misrata and more</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 mt-0.5">✓</div>
-                <span>Personalized property recommendations based on preferences</span>
+                <span>Local pricing in Libyan Dinar (LYD)</span>
               </li>
             </ul>
           </div>
@@ -50,9 +50,9 @@ const Auth = () => {
         <div className="w-full max-w-md">
           <div className="mb-8 text-center md:hidden">
             <h1 className="text-3xl font-bold">
-              airben<span className="text-airbenbe-primary">be</span>
+              Libya<span className="text-airbenbe-primary">RE</span>
             </h1>
-            <p className="text-muted-foreground mt-2">AI-powered property discovery</p>
+            <p className="text-muted-foreground mt-2">Modern real estate platform for Libya</p>
           </div>
           
           {isLogin ? (

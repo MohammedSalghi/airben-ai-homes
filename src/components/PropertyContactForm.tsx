@@ -78,10 +78,24 @@ const PropertyContactForm = ({ propertyId, propertyTitle }: PropertyContactFormP
     
     setIsSubmitting(true);
     
-    // Simulate API request
+    // Simulate API request and save to localStorage
     setTimeout(() => {
+      const inquiries = JSON.parse(localStorage.getItem("propertyInquiries") || "[]");
+      const newInquiry = {
+        id: Date.now().toString(),
+        propertyId,
+        propertyTitle,
+        ...formData,
+        submittedAt: new Date().toISOString(),
+        status: "pending"
+      };
+      
+      inquiries.push(newInquiry);
+      localStorage.setItem("propertyInquiries", JSON.stringify(inquiries));
+      
       toast.success("Viewing request sent! We'll contact you shortly.");
       setIsSubmitting(false);
+      
       // Reset form
       setFormData({
         name: "",

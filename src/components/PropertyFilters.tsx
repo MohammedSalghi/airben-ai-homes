@@ -1,8 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Home, Building, Hotel, Filter } from "lucide-react";
+import { toast } from "sonner";
 
 interface FilterOption {
   label: string;
@@ -32,14 +33,40 @@ const bedOptions: FilterOption[] = [
   { label: "4+", value: "4" },
 ];
 
-const PropertyFilters = () => {
+interface PropertyFiltersProps {
+  onFiltersChange?: (filters: {
+    propertyType: string;
+    priceRange: string;
+    bedrooms: string;
+  }) => void;
+}
+
+const PropertyFilters = ({ onFiltersChange }: PropertyFiltersProps) => {
   const [activeTab, setActiveTab] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedPriceRange, setSelectedPriceRange] = useState("any");
+  const [selectedBedrooms, setSelectedBedrooms] = useState("any");
+
+  const handleFilterChange = (type: string, value: string) => {
+    const filters = {
+      propertyType: type === 'type' ? value : activeTab,
+      priceRange: type === 'price' ? value : selectedPriceRange,
+      bedrooms: type === 'beds' ? value : selectedBedrooms,
+    };
+
+    if (type === 'type') setActiveTab(value);
+    if (type === 'price') setSelectedPriceRange(value);
+    if (type === 'beds') setSelectedBedrooms(value);
+
+    onFiltersChange?.(filters);
+  };
 
   return (
     <div className="w-full space-y-4 py-4">
       <div className="flex items-center justify-between">
-        <Tabs defaultValue="all" className="w-full max-w-md" onValueChange={setActiveTab}>
+        <Tabs defaultValue="all" className="w-full max-w-md" onValueChange={(value) => {
+          handleFilterChange('type', value);
+        }}>
           <TabsList className="grid grid-cols-4">
             <TabsTrigger value="all" className="flex items-center gap-2">
               <span className="sr-only sm:not-sr-only sm:inline-block">All</span>
@@ -52,9 +79,9 @@ const PropertyFilters = () => {
               <Building className="h-4 w-4" />
               <span className="sr-only sm:not-sr-only sm:inline-block">Apartments</span>
             </TabsTrigger>
-            <TabsTrigger value="hotel" className="flex items-center gap-2">
+            <TabsTrigger value="condo" className="flex items-center gap-2">
               <Hotel className="h-4 w-4" />
-              <span className="sr-only sm:not-sr-only sm:inline-block">Hotels</span>
+              <span className="sr-only sm:not-sr-only sm:inline-block">Condos</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -62,47 +89,66 @@ const PropertyFilters = () => {
         <Button 
           variant="outline" 
           size="sm" 
-          className="flex items-center gap-2"
           onClick={() => setShowFilters(!showFilters)}
+          className="ml-4"
         >
-          <Filter className="h-4 w-4" />
+          <Filter className="h-4 w-4 mr-2" />
           Filters
         </Button>
       </div>
       
       {showFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg bg-muted/30">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
           <div className="space-y-2">
-            <h3 className="text-sm font-medium">Property Type</h3>
-            <div className="flex flex-wrap gap-2">
-              {propertyTypes.map((type) => (
-                <Button key={type.value} variant="outline" size="sm" className="rounded-full">
-                  {type.label}
-                </Button>
-              ))}
-            </div>
+            <label className="text-sm font-medium">Price Range</label>
+            <Select value={selectedPriceRange} onValueChange={(value) => handleFilterChange('price', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select price range" />
+              </SelectTrigger>
+              <SelectContent>
+                {priceRanges.map((range) => (
+                  <SelectItem key={range.value} value={range.value}>
+                    {range.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="space-y-2">
-            <h3 className="text-sm font-medium">Price Range</h3>
-            <div className="flex flex-wrap gap-2">
-              {priceRanges.map((range) => (
-                <Button key={range.value} variant="outline" size="sm" className="rounded-full">
-                  {range.label}
-                </Button>
-              ))}
-            </div>
+            <label className="text-sm font-medium">Bedrooms</label>
+            <Select value={selectedBedrooms} onValueChange={(value) => handleFilterChange('beds', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select bedrooms" />
+              </SelectTrigger>
+              <SelectContent>
+                {bedOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Bedrooms</h3>
-            <div className="flex flex-wrap gap-2">
-              {bedOptions.map((option) => (
-                <Button key={option.value} variant="outline" size="sm" className="rounded-full">
-                  {option.label}
-                </Button>
-              ))}
-            </div>
+          <div className="space-y-2 flex items-end">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setSelectedPriceRange("any");
+                setSelectedBedrooms("any");
+                setActiveTab("all");
+                onFiltersChange?.({
+                  propertyType: "all",
+                  priceRange: "any",
+                  bedrooms: "any"
+                });
+                toast.success("Filters cleared");
+              }}
+              className="w-full"
+            >
+              Clear Filters
+            </Button>
           </div>
         </div>
       )}
